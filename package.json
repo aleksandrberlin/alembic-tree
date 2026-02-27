@@ -1,0 +1,120 @@
+{
+    "name": "alembic-tree",
+    "displayName": "Alembic Migration Tree",
+    "description": "Visualize Alembic migrations as a tree view",
+    "version": "0.0.1",
+    "publisher": "Aleksandr Berlin",
+    "license": "MIT",
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "alembic",
+        "migrations",
+        "python",
+        "sqlalchemy",
+        "tree"
+    ],
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "activationEvents": [
+        "onView:alembicMigrationsView",
+        "onCommand:alembicTree.refresh"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "alembicTreeContainer",
+                    "title": "Alembic Tree",
+                    "icon": "media/extension.svg"
+                }
+            ]
+        },
+        "views": {
+            "alembicTreeContainer": [
+                {
+                    "id": "alembicMigrationsView",
+                    "name": "Migrations"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "alembicTree.refresh",
+                "title": "Refresh",
+                "category": "Alembic Tree",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "alembicTree.openGraph",
+                "title": "Open Graph",
+                "category": "Alembic Tree",
+                "icon": "$(graph)"
+            },
+            {
+                "command": "alembicTree.expandAll",
+                "title": "Expand All",
+                "category": "Alembic Tree",
+                "icon": "$(expand-all)"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "alembicTree.refresh",
+                    "when": "view == alembicMigrationsView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "alembicTree.openGraph",
+                    "when": "view == alembicMigrationsView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "alembicTree.expandAll",
+                    "when": "view == alembicMigrationsView",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Alembic Migration Tree",
+            "properties": {
+                "alembicTree.versionsPath": {
+                    "type": "string",
+                    "default": "migrations/versions",
+                    "description": "Path (relative to workspace) to Alembic versions directory"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "package": "vsce package",
+        "format": "prettier --write \"src/**/*.ts\" \"*.json\" \"*.mjs\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"*.json\" \"*.mjs\"",
+        "lint": "eslint \"src/**/*.ts\"",
+        "lint:fix": "eslint \"src/**/*.ts\" --fix",
+        "fix": "npm run format && npm run lint:fix"
+    },
+    "devDependencies": {
+        "@types/jest": "^30.0.0",
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.85.0",
+        "eslint": "^9.39.3",
+        "prettier": "^3.8.1",
+        "typescript": "^5.0.0",
+        "typescript-eslint": "^8.56.1",
+        "vsce": "^2.15.0"
+    },
+    "dependencies": {
+        "cytoscape": "^3.33.1",
+        "cytoscape-dagre": "^2.5.0",
+        "dagre": "^0.8.5"
+    }
+}

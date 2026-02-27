@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Flask outline -->
+  <path
+    d="M10 2h4v2l-1 1v4.2l5.1 8.9A3 3 0 0 1 15.5 22h-7A3 3 0 0 1 5.9 18.1L11 9.2V5L10 4V2Z"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linejoin="round"
+  />
+  <!-- Liquid line -->
+  <path
+    d="M7.4 15.2h9.2"
+    stroke="currentColor"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    opacity="0.85"
+  />
+
+  <!-- Graph inside flask -->
+  <path
+    d="M8.2 17.6v-2.3h3.2v-2.2h3.2"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.95"
+  />
+  <path
+    d="M11.4 15.3v2.3h3.0"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.95"
+  />
+
+  <!-- Graph nodes -->
+  <circle cx="8.2" cy="17.6" r="1.0" fill="currentColor"/>
+  <circle cx="11.4" cy="15.3" r="1.0" fill="currentColor"/>
+  <circle cx="14.6" cy="13.1" r="1.0" fill="currentColor"/>
+  <circle cx="11.4" cy="17.6" r="1.0" fill="currentColor" opacity="0.95"/>
+  <circle cx="14.4" cy="17.6" r="1.0" fill="currentColor" opacity="0.95"/>
+
+  <!-- Bubbles -->
+  <circle cx="12.2" cy="8.2" r="0.7" stroke="currentColor" stroke-width="1.4" opacity="0.7"/>
+  <circle cx="14.2" cy="7.2" r="0.45" fill="currentColor" opacity="0.65"/>
+</svg>
