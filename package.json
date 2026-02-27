@@ -3,7 +3,7 @@
     "displayName": "Alembic Migration Tree",
     "description": "Visualize Alembic migrations as a tree view",
     "version": "0.0.1",
-    "publisher": "Aleksandr Berlin",
+    "publisher": "aleksandrberlin",
     "license": "MIT",
     "categories": [
         "Other"
@@ -15,6 +15,10 @@
         "sqlalchemy",
         "tree"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aleksandrberlin/alembic-tree"
+    },
     "engines": {
         "vscode": "^1.85.0"
     },
