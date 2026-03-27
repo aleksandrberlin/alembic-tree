@@ -88,9 +88,17 @@
             "title": "Alembic Migration Tree",
             "properties": {
                 "alembicTree.versionsPath": {
-                    "type": "string",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        }
+                    ],
                     "default": "migrations/versions",
-                    "description": "Path (relative to workspace) to Alembic versions directory"
+                    "description": "Path(s) (relative to workspace) to Alembic versions directory. Accepts a single string or an array of strings for multiple directories (e.g. submodules)."
                 }
             }
         }

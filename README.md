@@ -22,13 +22,24 @@ Visualize your [Alembic](https://alembic.sqlalchemy.org/) migration history as a
 2. The "Alembic Tree" icon appears in the activity bar
 3. Click it to see the migration tree
 
-The extension scans `migrations/versions/` by default. If your versions directory is elsewhere, configure it:
+The extension scans `migrations/versions/` by default. If your versions directory is elsewhere, configure it.
+
+The extension uses a direct filesystem walk, so it will detect migrations in deeply nested directories, git submodules, and paths excluded by VS Code's `files.exclude` or `search.exclude` settings. Multi-root workspaces are fully supported — all workspace folders are scanned.
 
 ## Settings
 
 | Setting | Default | Description |
 |---|---|---|
-| `alembicTree.versionsPath` | `migrations/versions` | Path (relative to workspace root) to the Alembic versions directory |
+| `alembicTree.versionsPath` | `migrations/versions` | Path(s) (relative to workspace root) to the Alembic versions directory. Accepts a string or an array of strings. |
+
+To scan multiple directories (e.g. a main project and a submodule):
+
+```jsonc
+"alembicTree.versionsPath": [
+    "migrations/versions",
+    "my-submodule/migrations/versions"
+]
+```
 
 ## Commands
 

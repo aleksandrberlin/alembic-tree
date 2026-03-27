@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import * as fs from "fs/promises";
 
 type RevisionId = string;
 
@@ -162,6 +163,33 @@ export class AlembicMigrationsProvider implements vscode.TreeDataProvider<Alembi
         return item;
     }
 
+    /**
+     * Recursively walk a directory using fs.readdir, collecting all .py files.
+     * This bypasses VS Code's file indexer so it is not affected by
+     * files.exclude / search.exclude settings or submodule boundaries.
+     */
+    private async walkPythonFiles(dir: string): Promise<string[]> {
+        const results: string[] = [];
+        let entries: import("fs").Dirent[];
+        try {
+            entries = await fs.readdir(dir, { withFileTypes: true });
+        } catch {
+            return results;
+        }
+        for (const entry of entries) {
+            const full = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                if (entry.name === "__pycache__") {
+                    continue;
+                }
+                results.push(...(await this.walkPythonFiles(full)));
+            } else if (entry.isFile() && entry.name.endsWith(".py")) {
+                results.push(full);
+            }
+        }
+        return results;
+    }
+
     async rebuildGraph(): Promise<void> {
         this.itemCache.clear();
         this.nodesByRevision.clear();
@@ -170,41 +198,41 @@ export class AlembicMigrationsProvider implements vscode.TreeDataProvider<Alembi
         this.heads = [];
         this.missingParents = [];
 
-        const ws = vscode.workspace.workspaceFolders?.[0];
-        if (!ws) {
+        const folders = vscode.workspace.workspaceFolders;
+        if (!folders || folders.length === 0) {
             this.out.appendLine("No workspace folder open");
             return;
         }
 
         const config = vscode.workspace.getConfiguration("alembicTree");
-        const versionsPath = config.get<string>("versionsPath", "migrations/versions");
-        const relPosix = versionsPath.replace(/\\/g, "/");
-        const pattern = new vscode.RelativePattern(ws, path.posix.join(relPosix, "**/*.py"));
+        const raw = config.get<string | string[]>("versionsPath", "migrations/versions");
+        const versionsPaths = Array.isArray(raw) ? raw : [raw];
 
-        this.out.appendLine(`Scanning ${versionsPath}`);
-
-        let files: vscode.Uri[];
-        try {
-            files = await vscode.workspace.findFiles(pattern, "**/{__pycache__}/**");
-        } catch (e: unknown) {
-            this.out.appendLine(`findFiles error: ${e instanceof Error ? e.message : String(e)}`);
-            return;
+        // Collect .py files from every workspace folder × every versionsPath
+        const allFiles: string[] = [];
+        for (const ws of folders) {
+            for (const vp of versionsPaths) {
+                const absDir = path.join(ws.uri.fsPath, vp);
+                this.out.appendLine(`Scanning ${absDir}`);
+                const files = await this.walkPythonFiles(absDir);
+                allFiles.push(...files);
+            }
         }
 
-        this.out.appendLine(`Found ${files.length} files`);
+        this.out.appendLine(`Found ${allFiles.length} files`);
 
         const parsed: MigrationNode[] = [];
-        for (const f of files) {
+        for (const filePath of allFiles) {
             try {
-                const doc = await vscode.workspace.openTextDocument(f);
-                const node = parseMigrationFile(doc.getText(), f.fsPath);
+                const content = await fs.readFile(filePath, "utf-8");
+                const node = parseMigrationFile(content, filePath);
                 if (node) {
                     parsed.push(node);
                 } else {
-                    this.out.appendLine(`Skipped (no revision): ${f.fsPath}`);
+                    this.out.appendLine(`Skipped (no revision): ${filePath}`);
                 }
             } catch (e: unknown) {
-                this.out.appendLine(`Failed to read ${f.fsPath}: ${e instanceof Error ? e.message : String(e)}`);
+                this.out.appendLine(`Failed to read ${filePath}: ${e instanceof Error ? e.message : String(e)}`);
             }
         }
 
